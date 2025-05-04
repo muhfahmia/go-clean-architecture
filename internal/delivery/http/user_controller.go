@@ -10,15 +10,15 @@ type UserController interface {
 }
 
 type userController struct {
-	usecase usecase.UserUsecase
+    usecase usecase.UserUsecase
 }
 
 func NewUserController(usecase usecase.UserUsecase) UserController {
 	return &userController{
-		usecase: usecase,
+		usecase:         usecase,
 	}
 }
 
 func (s *userController) Create(c *fiber.Ctx) error {
-	return nil
+    return nil
 }

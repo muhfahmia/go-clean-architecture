@@ -60,3 +60,7 @@ func (c *appConfig) NewPostgreSQLDatabase() *gorm.DB {
 
 	return db
 }
+
+func (c *appConfig) GetPostgreSQLDatabase() *gorm.DB {
+	return c.db
+}

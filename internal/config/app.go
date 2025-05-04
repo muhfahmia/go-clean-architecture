@@ -11,51 +11,62 @@ import (
 )
 
 type AppConfig interface {
-	ProvideConfig() *Config
+	Run()
+	ProvideConfig()
 	NewApp() *fiber.App
 	NewPostgreSQLDatabase() *gorm.DB
 	NewValidator() *validator.Validate
+	GetEnvirontmentApp() enum.AppEnv
+	GetApp() *fiber.App
+	GetPostgreSQLDatabase() *gorm.DB
+	GetValidator() *validator.Validate
 }
-
 type appConfig struct {
-	env enum.AppEnv
+	env       enum.AppEnv
+	port      string
+	app       *fiber.App
+	db        *gorm.DB
+	validator *validator.Validate
 }
 
-func NewAppConfig() AppConfig {
+func Bootstrap() AppConfig {
 	appConfig := appConfig{}
+	appConfig.CheckEnvirontment()
+	appConfig.ProvideConfig()
+	return &appConfig
+}
 
+func (c *appConfig) CheckEnvirontment() {
 	envApp := os.Getenv("APP_ENV")
 	if envApp == enum.AppProduction.String() {
-		appConfig.env = enum.AppProduction
+		c.env = enum.AppProduction
 	} else if envApp == enum.AppStaging.String() {
-		appConfig.env = enum.AppStaging
+		c.env = enum.AppStaging
 	} else {
 		godotenv.Load()
-		appConfig.env = enum.AppDevelopment
+		c.env = enum.AppDevelopment
 	}
-	return &appConfig
+}
+
+func (c *appConfig) ProvideConfig() {
+	c.port = ":" + os.Getenv("APP_PORT")
+	c.app = c.NewApp()
+	c.db = c.NewPostgreSQLDatabase()
+	c.validator = c.NewValidator()
+}
+
+func (c *appConfig) Run() {
+	c.app.Listen(c.port)
 }
 
 func (c *appConfig) NewApp() *fiber.App {
 	return fiber.New()
 }
 
-func (c *appConfig) ProvideConfig() *Config {
-	return &Config{
-		Port:      os.Getenv("APP_PORT"),
-		App:       c.NewApp(),
-		DB:        c.NewPostgreSQLDatabase(),
-		Validator: c.NewValidator(),
-	}
+func (c *appConfig) GetApp() *fiber.App {
+	return c.app
 }
 
-type Config struct {
-	Port      string
-	App       *fiber.App
-	DB        *gorm.DB
-	Validator *validator.Validate
-}
-
-func (c *Config) Run() {
-	c.App.Listen(":" + c.Port)
+func (c *appConfig) GetEnvirontmentApp() enum.AppEnv {
+	return c.env
 }
