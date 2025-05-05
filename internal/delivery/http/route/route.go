@@ -33,5 +33,6 @@ func (r router) SetupGuest() {
 }
 
 func (r router) SetupAuth() {
+	r.app.Post("/auth/register", r.container.GetUserController().Create)
 	fmt.Println("Running Auth Route")
 }

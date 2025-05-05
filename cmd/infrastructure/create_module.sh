@@ -57,6 +57,7 @@ cat > "$BASE_DIR/usecase/${module_snake}_usecase.go" <<EOF
 package usecase
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/muhfahmia/internal/repository"
 )
 
@@ -65,11 +66,12 @@ type ${module_name}Usecase interface {
 }
 
 type ${module_camel}Usecase struct {
+	validator *validator.Validate
 	repo repository.${module_name}Repository
 }
 
-func New${module_name}Usecase(repo repository.${module_name}Repository) ${module_name}Usecase {
-	return &${module_camel}Usecase{repo: repo}
+func New${module_name}Usecase(repo repository.${module_name}Repository, validator *validator.Validate) ${module_name}Usecase {
+	return &${module_camel}Usecase{validator: validator, repo: repo}
 }
 
 func (u *${module_camel}Usecase) Create() error {
@@ -128,14 +130,23 @@ func (di *appInjection) New${module_name}Controller(usecase usecase.${module_nam
 }
 
 func (di *appInjection) New${module_name}Usecase(repository repository.${module_name}Repository) usecase.${module_name}Usecase {
-	return usecase.New${module_name}Usecase(repository)
+	return usecase.New${module_name}Usecase(repository, di.config.GetValidator())
 }
 
 func (di *appInjection) New${module_name}Repository() repository.${module_name}Repository {
-	return repository.New${module_name}Repository(di.config.DB)
+	return repository.New${module_name}Repository(di.config.GetPostgreSQLDatabase())
 }
 
 EOF
 echo "Created ${module_name} depedency injection interfaces & implementation"
+
+# Generate Model
+cat > "$BASE_DIR/model/${module_snake}_model.go" <<EOF
+package model
+
+type ${module_name}Model struct {
+}
+EOF
+echo "Created ${module_name} model"
 
 echo "Struktur clean architecture untuk entitas $module_name telah berhasil dibuat!"

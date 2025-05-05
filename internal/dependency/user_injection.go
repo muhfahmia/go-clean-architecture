@@ -17,9 +17,10 @@ func (di *appInjection) NewUserController(usecase usecase.UserUsecase) http.User
 }
 
 func (di *appInjection) NewUserUsecase(repository repository.UserRepository) usecase.UserUsecase {
-	return usecase.NewUserUsecase(repository)
+	return usecase.NewUserUsecase(repository, di.config.GetValidator())
 }
 
 func (di *appInjection) NewUserRepository() repository.UserRepository {
 	return repository.NewUserRepository(di.config.GetPostgreSQLDatabase())
 }
+

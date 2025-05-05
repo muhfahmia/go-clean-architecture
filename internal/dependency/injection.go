@@ -1,8 +1,6 @@
 package dependency
 
-import (
-	"github.com/muhfahmia/internal/config"
-)
+import "github.com/muhfahmia/internal/config"
 
 type Injection interface {
 	ProvideContainer() Container
