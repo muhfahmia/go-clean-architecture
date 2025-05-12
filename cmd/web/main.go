@@ -9,10 +9,7 @@ import (
 func main() {
 	//setup config
 	app := config.Bootstrap()
-
-	//setup depedency injection
-	var di dependency.Injection = dependency.NewAppInjection(app)
-	container := di.ProvideContainer()
+	container := dependency.ProvideContainer(app)
 
 	//setup router
 	router := route.NewRouter(container, app.GetApp())

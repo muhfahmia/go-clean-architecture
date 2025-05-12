@@ -1,8 +1,11 @@
 package dependency
 
 import (
+	"github.com/muhfahmia/internal/config"
 	"github.com/muhfahmia/internal/delivery/http"
 	"github.com/muhfahmia/internal/delivery/http/middleware"
+	"github.com/muhfahmia/internal/repository"
+	"github.com/muhfahmia/internal/usecase"
 )
 
 type Container interface {
@@ -11,16 +14,18 @@ type Container interface {
 }
 
 type container struct {
+	baseUsecase    usecase.BaseUsecase
 	appMiddleware  middleware.Middleware
 	userController http.UserController
 }
 
-func (a *appInjection) ProvideContainer() Container {
+func ProvideContainer(config config.AppConfig) Container {
 	container := container{}
-	container.appMiddleware = a.NewAppMiddleware()
+	container.appMiddleware = middleware.NewAppMiddleware()
+	container.baseUsecase = usecase.NewBaseUsecase(config.GetValidator())
 
-	userRepository := a.NewUserRepository()
-	userUsecase := a.NewUserUsecase(userRepository)
+	userRepository := repository.NewUserRepository(config.GetPostgreSQLDatabase())
+	userUsecase := usecase.NewUserUsecase(userRepository, container.baseUsecase)
 	container.userController = http.NewUserController(userUsecase)
 	return container
 }

@@ -109,37 +109,6 @@ func (s *${module_camel}Controller) Create(c *fiber.Ctx) error {
 EOF
 echo "Created ${module_name} controller interfaces & implementation"
 
-# Generate Depedency Injection
-cat > "$BASE_DIR/dependency/${module_snake}_injection.go" <<EOF
-package dependency
-
-import (
-	"github.com/muhfahmia/internal/delivery/http"
-	"github.com/muhfahmia/internal/repository"
-	"github.com/muhfahmia/internal/usecase"
-)
-
-type ${module_name}Injection interface {
-	New${module_name}Controller(usecase usecase.${module_name}Usecase) http.${module_name}Controller
-	New${module_name}Usecase(repository repository.${module_name}Repository) usecase.${module_name}Usecase
-	New${module_name}Repository() repository.${module_name}Repository
-}
-
-func (di *appInjection) New${module_name}Controller(usecase usecase.${module_name}Usecase) http.${module_name}Controller {
-	return http.New${module_name}Controller(usecase)
-}
-
-func (di *appInjection) New${module_name}Usecase(repository repository.${module_name}Repository) usecase.${module_name}Usecase {
-	return usecase.New${module_name}Usecase(repository, di.config.GetValidator())
-}
-
-func (di *appInjection) New${module_name}Repository() repository.${module_name}Repository {
-	return repository.New${module_name}Repository(di.config.GetPostgreSQLDatabase())
-}
-
-EOF
-echo "Created ${module_name} depedency injection interfaces & implementation"
-
 # Generate Model
 cat > "$BASE_DIR/model/${module_snake}_model.go" <<EOF
 package model

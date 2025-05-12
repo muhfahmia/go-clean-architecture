@@ -14,14 +14,14 @@ type AppError interface {
 	GetError() error
 	GetErrorMessage() string
 	GetErrorType() enum.ErrorType
-	GetErrorValidation() []appValidationError
+	GetErrorDetail() any
 }
 
 type appError struct {
-	Type            enum.ErrorType
-	Message         string
-	ErrorSource     error
-	ErrorValidation []appValidationError
+	Type        enum.ErrorType
+	Message     string
+	ErrorSource error
+	ErrorDetail any
 }
 
 type appValidationError struct {
@@ -63,8 +63,8 @@ func (e *appError) GetErrorType() enum.ErrorType {
 	return e.Type
 }
 
-func (e *appError) GetErrorValidation() []appValidationError {
-	return e.ErrorValidation
+func (e *appError) GetErrorDetail() any {
+	return e.ErrorDetail
 }
 
 func (e *appError) SetErrorValidation() {
@@ -182,7 +182,7 @@ func (e *appError) SetErrorValidation() {
 				Message: errorMessage,
 			})
 		}
-		e.ErrorValidation = verros
+		e.ErrorDetail = verros
 	}
 
 }

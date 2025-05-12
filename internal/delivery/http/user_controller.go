@@ -10,25 +10,30 @@ type UserController interface {
 	Create(c *fiber.Ctx) error
 }
 
-type userController struct {
+type userControllerImpl struct {
 	usecase usecase.UserUsecase
 }
 
 func NewUserController(usecase usecase.UserUsecase) UserController {
-	return &userController{
+	return &userControllerImpl{
 		usecase: usecase,
 	}
 }
 
-func (s *userController) Create(c *fiber.Ctx) error {
-	res := model.NewAppResponse()
+func (s *userControllerImpl) Create(c *fiber.Ctx) error {
+	res := model.NewHttpResponseBuilder(c)
 	req := model.CreateUserRequest{}
-	if errB := c.BodyParser(&req); errB != nil {
+
+	if errP := res.WithRequestParameter(&req); errP != nil {
+		return res.Send()
 	}
 
 	if err := s.usecase.Create(req); err != nil {
-		res.SetData("validationErrors", err.GetErrorValidation())
-		return c.Status(fiber.StatusBadRequest).JSON(res)
+		res.WithError(err)
+		return res.Send()
 	}
-	return c.Status(fiber.StatusCreated).JSON(res)
+	res.WithMessage("User created successfully")
+	res.WithHttpCode(fiber.StatusCreated)
+	res.WithSuccess(true)
+	return res.Send()
 }

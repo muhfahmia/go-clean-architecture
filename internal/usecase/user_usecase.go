@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/muhfahmia/internal/model"
 	"github.com/muhfahmia/internal/repository"
 	"github.com/muhfahmia/pkg/enum"
@@ -12,16 +11,16 @@ type UserUsecase interface {
 }
 
 type userUsecase struct {
-	validator *validator.Validate
-	repo      repository.UserRepository
+	usecase BaseUsecase
+	repo    repository.UserRepository
 }
 
-func NewUserUsecase(repo repository.UserRepository, validator *validator.Validate) UserUsecase {
-	return &userUsecase{validator: validator, repo: repo}
+func NewUserUsecase(repo repository.UserRepository, usecase BaseUsecase) UserUsecase {
+	return &userUsecase{usecase: usecase, repo: repo}
 }
 
 func (u *userUsecase) Create(req model.CreateUserRequest) model.AppError {
-	if errV := u.validator.Struct(req); errV != nil {
+	if errV := u.usecase.Validate(req); errV != nil {
 		return model.NewAppErrorValidation(errV, enum.ErrorValidation)
 	}
 	return nil

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/muhfahmia/internal/dependency"
 )
 
@@ -33,6 +34,7 @@ func (r router) SetupGuest() {
 }
 
 func (r router) SetupAuth() {
+	r.app.Use(logger.New())
 	r.app.Post("/auth/register", r.container.GetUserController().Create)
 	fmt.Println("Running Auth Route")
 }
