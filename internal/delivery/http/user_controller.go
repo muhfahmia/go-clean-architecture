@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/muhfahmia/internal/model"
 	"github.com/muhfahmia/internal/usecase"
+	"github.com/muhfahmia/pkg/enum"
 )
 
 type UserController interface {
@@ -32,7 +33,7 @@ func (s *userControllerImpl) Create(c *fiber.Ctx) error {
 		res.WithError(err)
 		return res.Send()
 	}
-	res.WithMessage("User created successfully")
+	res.WithMessage(enum.MessageCreatedSuccess.Format("User"))
 	res.WithHttpCode(fiber.StatusCreated)
 	res.WithSuccess(true)
 	return res.Send()

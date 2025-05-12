@@ -64,7 +64,7 @@ func (e ErrorType) String() string {
 func (e ErrorType) HttpCode() int {
 	switch e {
 	// Client Errors
-	case ErrorBadRequest:
+	case ErrorBadRequest, ErrorValidation:
 		return 400
 	case ErrorUnauthorized:
 		return 401
@@ -80,11 +80,10 @@ func (e ErrorType) HttpCode() int {
 		return 409
 	case ErrorGone:
 		return 410
-	case ErrorValidation:
+	case ErrorUnprocessableEntity:
 		return 422
 	case ErrorTooMany:
 		return 429
-
 	// Server Errors
 	case ErrorInternal:
 		return 500
